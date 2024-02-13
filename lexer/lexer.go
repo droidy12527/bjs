@@ -10,6 +10,8 @@ import "compiler/tokens"
 		3. skipWhiteSpace(): skips white space until a character is found.
 		4. skipComments(): skips the comments in the code.
 		5. peekCharacter(): returns the next character in the code.
+		6. newToken(tokenType, tokenLiteral): returns new token based on token type and literal.
+		7. readTwoCharcters(tokenType): reads two characters and returns a new token.
 */
 
 type Lexer interface {
@@ -71,6 +73,15 @@ func (l *lexer) peekCharacter() byte {
 		return 0
 	}
 	return l.input[l.nextCharPointer]
+}
+
+func (l *lexer) readTwoCharcters(tokenType tokens.TokenType) tokens.Token {
+	currectChar := l.char
+	l.readSingleChar()
+	return tokens.Token{
+		Type:    tokenType,
+		Literal: string(currectChar) + string(l.char),
+	}
 }
 
 func (l *lexer) newToken(tokenType tokens.TokenType, tokenCharacter byte) tokens.Token {
