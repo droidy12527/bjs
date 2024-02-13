@@ -1,6 +1,8 @@
 package lexer
 
-import "compiler/tokens"
+import (
+	"compiler/tokens"
+)
 
 /*
 	Lexer Interface defination.
@@ -52,6 +54,30 @@ func (l *lexer) nextToken() tokens.Token {
 		l.skipComments()
 	}
 
+	switch l.char {
+	case '=':
+		if l.peekCharacter() == '=' {
+			tok = l.readTwoCharcters(tokens.EQ)
+		} else {
+			tok = l.newToken(tokens.ASSIGN, l.char)
+		}
+	case '!':
+		if l.peekCharacter() == '=' {
+			tok = l.readTwoCharcters(tokens.NEQ)
+		} else {
+			tok = l.newToken(tokens.BANG, l.char)
+		}
+	case ';':
+		tok = l.newToken(tokens.SEMICOLON, l.char)
+	case ',':
+		tok = l.newToken(tokens.COMMA, l.char)
+	case '<':
+		tok = l.newToken(tokens.LT, l.char)
+	case '>':
+		tok = l.newToken(tokens.GT, l.char)
+	}
+
+	l.readSingleChar()
 	return tok
 }
 
