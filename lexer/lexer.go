@@ -46,6 +46,10 @@ func (l *lexer) nextToken() tokens.Token {
 	var tok tokens.Token
 	l.skipWhiteSpace()
 
+	if l.char == '#' {
+		l.skipComments()
+	}
+
 	return tok
 }
 
@@ -67,4 +71,11 @@ func (l *lexer) peekCharacter() byte {
 		return 0
 	}
 	return l.input[l.nextCharPointer]
+}
+
+func (l *lexer) newToken(tokenType tokens.TokenType, tokenCharacter byte) tokens.Token {
+	return tokens.Token{
+		Type:    tokenType,
+		Literal: string(tokenCharacter),
+	}
 }
