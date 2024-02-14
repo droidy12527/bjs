@@ -2,6 +2,14 @@ package lexer
 
 import "compiler/token"
 
+/*
+	Lexer for the Pookie Compiler
+	Functions:
+		1. Lexer works by taking string as in input and tokenizing it.
+		2. Lexer returns array of tokens
+		3. These tokens are then parsed by the parser to convert them into AST (Abstract Syntax Tree)
+*/
+
 type Lexer interface {
 	NextToken() token.Token
 }
