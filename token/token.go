@@ -1,4 +1,4 @@
-package tokens
+package token
 
 /*
 	Token Configuration for language.
@@ -10,7 +10,7 @@ package tokens
 		3. Function lookup for identifier returns type identifier if not found in the basic tokenization.
 */
 
-type TokenType string
+type Type string
 
 const (
 	ILLEGAL   = "ILLEGAL"
@@ -54,11 +54,11 @@ const (
 )
 
 type Token struct {
-	Type    TokenType
+	Type    Type
 	Literal string
 }
 
-var keywords = map[string]TokenType{
+var keywords = map[string]Type{
 	"fn":     FUNCTION,
 	"let":    LET,
 	"true":   TRUE,
@@ -70,7 +70,7 @@ var keywords = map[string]TokenType{
 	"macro":  MACRO,
 }
 
-func LookupForIdentifiers(ident string) TokenType {
+func ReadIdent(ident string) Type {
 	if tok, ok := keywords[ident]; ok {
 		return tok
 	}
