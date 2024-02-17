@@ -40,7 +40,7 @@ func (l *lexer) readChar() {
 func (l *lexer) NextToken() token.Token {
 	l.skipWhitespace()
 
-	if l.ch == '$' {
+	if l.ch == '#' {
 		l.skipComment()
 	}
 

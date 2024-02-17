@@ -6,6 +6,7 @@ const (
 	SPACE     = "SPACE"
 	IDENTFIER = "IDENTIFIER"
 	SEPERATOR = "SEPERATOR"
+	PROMPT    = ">>"
 )
 
 // func GetGolangCrossCompilerMap() map[string]string {
