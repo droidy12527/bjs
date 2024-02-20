@@ -16,6 +16,7 @@ func TestLetStatement(t *testing.T) {
 	p := New(l)
 
 	program := p.ParseProgram()
+	checkforErrors(p, t)
 	if program == nil {
 		t.Fatalf("Program returned nil")
 	}
@@ -34,6 +35,13 @@ func TestLetStatement(t *testing.T) {
 		if !testLetStatement(t, statement, tt.expectedIdentifier) {
 			return
 		}
+	}
+}
+
+func checkforErrors(p *Parser, t *testing.T) {
+	errors := p.Errors()
+	for _, errors := range errors {
+		t.Errorf("Errors are as follows %s", errors)
 	}
 }
 
