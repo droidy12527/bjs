@@ -14,7 +14,7 @@ import (
 
 func main() {
 	// readFile()
-	tokenDebug := os.Getenv("POOKIE_DEBUG_TOKENS")
+	tokenDebug := os.Getenv("POOKIE_DEBUG")
 	if tokenDebug == "true" {
 		fmt.Println("Welcome to pookie lang debugger, This is token debugger")
 		fmt.Println("Please type in expressions to Parse: ")
