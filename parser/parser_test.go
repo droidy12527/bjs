@@ -11,6 +11,7 @@ func TestLetStatement(t *testing.T) {
 		let x = 1;
 		let y = 2;
 		let foobar = 10;
+		return "hello";
 	`
 	l := lexer.New(input)
 	p := New(l)
@@ -20,7 +21,7 @@ func TestLetStatement(t *testing.T) {
 	if program == nil {
 		t.Fatalf("Program returned nil")
 	}
-	if len(program.Statements) != 3 {
+	if len(program.Statements) != 4 {
 		t.Fatalf("Program does not contain 3 statements got %d in return", len(program.Statements))
 	}
 	tests := []struct {
