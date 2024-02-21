@@ -9,7 +9,14 @@ import (
 
 /*
 	Refactor functions such as expectPeek and peekTokenIs for better code simplicity
+	Refer to PRATT PARSER: https://journal.stuffwithstuff.com/2011/03/19/pratt-parsers-expression-parsing-made-easy/
+	Used Pratt parsing, Which is top down precedence parsing.
 */
+
+type (
+	prefixParsingFunction func() ast.Expression
+	infixParsingFunction  func(ast.Expression) ast.Expression
+)
 
 type Parser struct {
 	l         lexer.Lexer
