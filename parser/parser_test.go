@@ -39,6 +39,31 @@ func TestLetStatement(t *testing.T) {
 	}
 }
 
+func TestIndetifierExpression(t *testing.T) {
+	input := "pookie;"
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkforErrors(p, t)
+	if len(program.Statements) != 1 {
+		t.Fatalf("program has statement mismatch. got %d stataments", len(program.Statements))
+	}
+	statement, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program statement is not ast expression, got %T", program.Statements[0])
+	}
+	identifier, ok := statement.Expression.(*ast.Identifier)
+	if !ok {
+		t.Fatalf("expected the value to be identifier got %T", statement.Expression)
+	}
+	if identifier.Value != "pookie" {
+		t.Errorf("identifier value not %s got %s instead", "pookie", identifier.Value)
+	}
+	if identifier.TokenLiteral() != "pookie" {
+		t.Errorf("got wrong token literal for indeitifer, Expected %s got %s", "pookie", identifier.TokenLiteral())
+	}
+}
+
 func checkforErrors(p *Parser, t *testing.T) {
 	errors := p.Errors()
 	for _, errors := range errors {
