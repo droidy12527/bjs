@@ -77,9 +77,9 @@ func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
 func (ls *LetStatement) String() string {
 	var bytes bytes.Buffer
 	bytes.WriteString(ls.TokenLiteral() + " ")
-	bytes.WriteString(ls.Name.TokenLiteral())
+	bytes.WriteString(ls.Name.String())
 	if ls.Value != nil {
-		bytes.WriteString(" = " + ls.Value.TokenLiteral())
+		bytes.WriteString(" = " + ls.Value.String())
 	}
 	bytes.WriteString(";")
 	return bytes.String()
