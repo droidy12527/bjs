@@ -9,6 +9,17 @@ const (
 	PROMPT    = ">>"
 )
 
+const (
+	_ int = iota
+	LOWEST
+	EQUALS
+	LESSGREATER
+	SUM
+	PRODUCT
+	PREFIX
+	CALL
+)
+
 // func GetGolangCrossCompilerMap() map[string]string {
 
 // }

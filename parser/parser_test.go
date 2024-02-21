@@ -3,6 +3,7 @@ package parser
 import (
 	"compiler/ast"
 	"compiler/lexer"
+	"fmt"
 	"testing"
 )
 
@@ -36,6 +37,67 @@ func TestLetStatement(t *testing.T) {
 		if !testLetStatement(t, statement, tt.expectedIdentifier) {
 			return
 		}
+	}
+}
+
+func TestIndetifierExpression(t *testing.T) {
+	input := "pookie;"
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkforErrors(p, t)
+	if len(program.Statements) != 1 {
+		t.Fatalf("program has statement mismatch. got %d stataments", len(program.Statements))
+	}
+	statement, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program statement is not ast expression, got %T", program.Statements[0])
+	}
+	identifier, ok := statement.Expression.(*ast.Identifier)
+	if !ok {
+		t.Fatalf("expected the value to be identifier got %T", statement.Expression)
+	}
+	if identifier.Value != "pookie" {
+		t.Errorf("identifier value not %s got %s instead", "pookie", identifier.Value)
+	}
+	if identifier.TokenLiteral() != "pookie" {
+		t.Errorf("got wrong token literal for indeitifer, Expected %s got %s", "pookie", identifier.TokenLiteral())
+	}
+}
+
+func TestIntegerExpression(t *testing.T) {
+	input := "5;"
+
+	p := New(lexer.New(input))
+	program := p.ParseProgram()
+	checkforErrors(p, t)
+
+	l := len(program.Statements)
+	if l != 1 {
+		t.Fatalf("program has not enough statements. got=%d", l)
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not *ast.ExpressionStatement. got=%T",
+			program.Statements[0])
+	}
+
+	testIntegerLiteral(t, stmt.Expression, 5)
+}
+
+func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) {
+	i, ok := il.(*ast.IntegerLiteral)
+	if !ok {
+		t.Fatalf("il not *ast.IntegerLiteral. got=%T", il)
+	}
+
+	if i.Value != value {
+		t.Errorf("i.Value not %d. got=%d", value, i.Value)
+	}
+
+	if i.TokenLiteral() != fmt.Sprintf("%d", value) {
+		t.Errorf("i.TokenLiteral() not %d. got=%s", value, i.TokenLiteral())
 	}
 }
 

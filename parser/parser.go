@@ -2,9 +2,11 @@ package parser
 
 import (
 	"compiler/ast"
+	"compiler/constants"
 	"compiler/lexer"
 	"compiler/token"
 	"fmt"
+	"strconv"
 )
 
 /*
@@ -19,17 +21,43 @@ type (
 )
 
 type Parser struct {
-	l         lexer.Lexer
-	curToken  token.Token
-	peekToken token.Token
-	errors    []string
+	l                     lexer.Lexer
+	curToken              token.Token
+	peekToken             token.Token
+	errors                []string
+	prefixParsingFunction map[token.Type]prefixParsingFunction
+	infixParsingFunction  map[token.Type]infixParsingFunction
 }
 
 func New(l lexer.Lexer) *Parser {
 	p := &Parser{l: l, errors: []string{}}
+	p.registerPrefixFunctions()
 	p.nextToken()
 	p.nextToken()
 	return p
+}
+
+func (p *Parser) registerPrefixFunctions() {
+	p.prefixParsingFunction = map[token.Type]prefixParsingFunction{
+		token.IDENT: p.parseIdentifier,
+		token.INT:   p.parseIntegerLiteral,
+	}
+}
+
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	literal := &ast.IntegerLiteral{Token: p.curToken}
+	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
+	if err != nil {
+		msg := fmt.Sprintf("could not parse %q as integer", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+	literal.Value = value
+	return literal
+}
+
+func (p *Parser) parseIdentifier() ast.Expression {
+	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 }
 
 func (p *Parser) nextToken() {
@@ -57,8 +85,31 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return p.parseReturnStatement()
 	default:
+		return p.parseExpressionStatement()
+	}
+}
+
+func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	stmt := &ast.ExpressionStatement{
+		Token:      p.curToken,
+		Expression: p.parseExpression(constants.LOWEST),
+	}
+	if p.peekTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseExpression(precedence int) ast.Expression {
+	prefix := p.prefixParsingFunction[p.curToken.Type]
+	if prefix == nil {
+		msg := fmt.Sprintf("no prefix parse function for %s found", p.curToken.Type)
+		p.errors = append(p.errors, msg)
 		return nil
 	}
+	expr := prefix()
+	return expr
 }
 
 func (p *Parser) parseReturnStatement() ast.Statement {
