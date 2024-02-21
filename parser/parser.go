@@ -6,6 +6,7 @@ import (
 	"compiler/lexer"
 	"compiler/token"
 	"fmt"
+	"strconv"
 )
 
 /*
@@ -30,16 +31,29 @@ type Parser struct {
 
 func New(l lexer.Lexer) *Parser {
 	p := &Parser{l: l, errors: []string{}}
-	p.prefixParsingFunction = map[token.Type]prefixParsingFunction{
-		token.IDENT: p.parseIdentifier,
-	}
+	p.registerPrefixFunctions()
 	p.nextToken()
 	p.nextToken()
 	return p
 }
 
-func (p *Parser) registerInfixParsingMap(tokenType token.Type, fn infixParsingFunction) {
-	p.infixParsingFunction[tokenType] = fn
+func (p *Parser) registerPrefixFunctions() {
+	p.prefixParsingFunction = map[token.Type]prefixParsingFunction{
+		token.IDENT: p.parseIdentifier,
+		token.INT:   p.parseIntegerLiteral,
+	}
+}
+
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	literal := &ast.IntegerLiteral{Token: p.curToken}
+	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
+	if err != nil {
+		msg := fmt.Sprintf("could not parse %q as integer", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+	literal.Value = value
+	return literal
 }
 
 func (p *Parser) parseIdentifier() ast.Expression {
