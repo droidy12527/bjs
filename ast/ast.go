@@ -31,6 +31,12 @@ type Expression interface {
 	expressionNode()
 }
 
+type PrefixExpression struct {
+	Token    token.Token
+	Operator string
+	Right    Expression
+}
+
 type Program struct {
 	Statements []Statement
 }
@@ -118,3 +124,14 @@ func (e *ExpressionStatement) String() string {
 func (il *IntegerLiteral) expressionNode()      {}
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 func (il *IntegerLiteral) String() string       { return il.Token.Literal }
+
+func (pe *PrefixExpression) expressionNode()      {}
+func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
+func (pe *PrefixExpression) String() string {
+	var bytesOut bytes.Buffer
+	bytesOut.WriteString("(")
+	bytesOut.WriteString(pe.Operator)
+	bytesOut.WriteString(pe.Right.String())
+	bytesOut.WriteString(")")
+	return bytesOut.String()
+}
