@@ -41,7 +41,19 @@ func (p *Parser) registerPrefixFunctions() {
 	p.prefixParsingFunction = map[token.Type]prefixParsingFunction{
 		token.IDENT: p.parseIdentifier,
 		token.INT:   p.parseIntegerLiteral,
+		token.BANG:  p.parsePrefixExpression,
+		token.MINUS: p.parsePrefixExpression,
 	}
+}
+
+func (p *Parser) parsePrefixExpression() ast.Expression {
+	expression := &ast.PrefixExpression{
+		Token:    p.curToken,
+		Operator: p.curToken.Literal,
+	}
+	p.nextToken()
+	expression.Right = p.parseExpression(constants.PREFIX)
+	return expression
 }
 
 func (p *Parser) parseIntegerLiteral() ast.Expression {

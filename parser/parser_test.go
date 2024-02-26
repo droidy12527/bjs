@@ -86,6 +86,38 @@ func TestIntegerExpression(t *testing.T) {
 	testIntegerLiteral(t, stmt.Expression, 5)
 }
 
+func TestPrefixOperationTesting(t *testing.T) {
+	input := []struct {
+		input        string
+		operator     string
+		integerValue int64
+	}{
+		{"!5", "!", 5},
+		{"-15", "-", 15},
+	}
+	for _, tt := range input {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkforErrors(p, t)
+		if len(program.Statements) != 1 {
+			t.Fatalf("Program must contain %d statements got %d", 1, len(program.Statements))
+		}
+		statement, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("program statement must be ast.ExpressionStatement got back %T", statement.Expression)
+		}
+		prefix, ok := statement.Expression.(*ast.PrefixExpression)
+		if !ok {
+			t.Fatalf("Expected to get ast.PrefixExpression git back %T", statement.Expression)
+		}
+		if prefix.Operator != tt.operator {
+			t.Fatalf("Operator is wrong expected %s got back %s", tt.operator, prefix.Operator)
+		}
+		testIntegerLiteral(t, prefix.Right, tt.integerValue)
+	}
+}
+
 func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) {
 	i, ok := il.(*ast.IntegerLiteral)
 	if !ok {
