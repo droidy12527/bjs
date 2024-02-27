@@ -55,6 +55,8 @@ func (p *Parser) registerPrefixFunctions() {
 		token.INT:   p.parseIntegerLiteral,
 		token.BANG:  p.parsePrefixExpression,
 		token.MINUS: p.parsePrefixExpression,
+		token.TRUE:  p.parseBooleanExpressions,
+		token.FALSE: p.parseBooleanExpressions,
 	}
 }
 
@@ -80,6 +82,11 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	precedence := p.currentPrecedence()
 	p.nextToken()
 	expression.Right = p.parseExpression(precedence)
+	return expression
+}
+
+func (p *Parser) parseBooleanExpressions() ast.Expression {
+	expression := &ast.Boolean{Token: p.curToken, Value: p.curTokenIs(token.TRUE)}
 	return expression
 }
 

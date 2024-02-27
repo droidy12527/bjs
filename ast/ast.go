@@ -53,6 +53,11 @@ type Identifier struct {
 	Value string
 }
 
+type Boolean struct {
+	Token token.Token
+	Value bool
+}
+
 type IntegerLiteral struct {
 	Token token.Token
 	Value int64
@@ -154,3 +159,7 @@ func (ie *InfixExpression) String() string {
 	bytesOut.WriteString(")")
 	return bytesOut.String()
 }
+
+func (b *Boolean) expressionNode()      {}
+func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
+func (b *Boolean) String() string       { return b.Token.Literal }
