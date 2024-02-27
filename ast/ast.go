@@ -37,6 +37,13 @@ type PrefixExpression struct {
 	Right    Expression
 }
 
+type InfixExpression struct {
+	Token    token.Token
+	Right    Expression
+	Operator string
+	Left     Expression
+}
+
 type Program struct {
 	Statements []Statement
 }
@@ -132,6 +139,18 @@ func (pe *PrefixExpression) String() string {
 	bytesOut.WriteString("(")
 	bytesOut.WriteString(pe.Operator)
 	bytesOut.WriteString(pe.Right.String())
+	bytesOut.WriteString(")")
+	return bytesOut.String()
+}
+
+func (ie *InfixExpression) expressionNode()      {}
+func (ie *InfixExpression) TokenLiteral() string { return ie.Token.Literal }
+func (ie *InfixExpression) String() string {
+	var bytesOut bytes.Buffer
+	bytesOut.WriteString("(")
+	bytesOut.WriteString(ie.Left.String())
+	bytesOut.WriteString(" " + ie.Operator + " ")
+	bytesOut.WriteString(ie.Right.String())
 	bytesOut.WriteString(")")
 	return bytesOut.String()
 }

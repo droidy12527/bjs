@@ -15,6 +15,17 @@ import (
 	Used Pratt parsing, Which is top down precedence parsing.
 */
 
+var precedence = map[token.Type]int{
+	token.EQ:       constants.EQUALS,
+	token.NEQ:      constants.EQUALS,
+	token.LT:       constants.LESSGREATER,
+	token.GT:       constants.LESSGREATER,
+	token.PLUS:     constants.SUM,
+	token.MINUS:    constants.SUM,
+	token.SLASH:    constants.PRODUCT,
+	token.ASTARISK: constants.PRODUCT,
+}
+
 type (
 	prefixParsingFunction func() ast.Expression
 	infixParsingFunction  func(ast.Expression) ast.Expression
@@ -32,6 +43,7 @@ type Parser struct {
 func New(l lexer.Lexer) *Parser {
 	p := &Parser{l: l, errors: []string{}}
 	p.registerPrefixFunctions()
+	p.registerInfixFunctions()
 	p.nextToken()
 	p.nextToken()
 	return p
@@ -44,6 +56,45 @@ func (p *Parser) registerPrefixFunctions() {
 		token.BANG:  p.parsePrefixExpression,
 		token.MINUS: p.parsePrefixExpression,
 	}
+}
+
+func (p *Parser) registerInfixFunctions() {
+	p.infixParsingFunction = map[token.Type]infixParsingFunction{
+		token.PLUS:     p.parseInfixExpression,
+		token.MINUS:    p.parseInfixExpression,
+		token.SLASH:    p.parseInfixExpression,
+		token.ASTARISK: p.parseInfixExpression,
+		token.EQ:       p.parseInfixExpression,
+		token.NEQ:      p.parseInfixExpression,
+		token.LT:       p.parseInfixExpression,
+		token.GT:       p.parseInfixExpression,
+	}
+}
+
+func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
+	expression := &ast.InfixExpression{
+		Token:    p.curToken,
+		Operator: p.curToken.Literal,
+		Left:     left,
+	}
+	precedence := p.currentPrecedence()
+	p.nextToken()
+	expression.Right = p.parseExpression(precedence)
+	return expression
+}
+
+func (p *Parser) peekPrecendence() int {
+	if p, ok := precedence[p.peekToken.Type]; ok {
+		return p
+	}
+	return constants.LOWEST
+}
+
+func (p *Parser) currentPrecedence() int {
+	if p, ok := precedence[p.curToken.Type]; ok {
+		return p
+	}
+	return constants.LOWEST
 }
 
 func (p *Parser) parsePrefixExpression() ast.Expression {
@@ -121,6 +172,14 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		return nil
 	}
 	expr := prefix()
+	if !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecendence() {
+		infix := p.infixParsingFunction[p.peekToken.Type]
+		if infix == nil {
+			return expr
+		}
+		p.nextToken()
+		expr = infix(expr)
+	}
 	return expr
 }
 
