@@ -105,7 +105,7 @@ func TestPrefixOperationTesting(t *testing.T) {
 		}
 		statement, ok := program.Statements[0].(*ast.ExpressionStatement)
 		if !ok {
-			t.Fatalf("program statement must be ast.ExpressionStatement got back %T", statement.Expression)
+			t.Fatalf("program statement must be ast.ExpressionStatement got back %T", statement)
 		}
 		prefix, ok := statement.Expression.(*ast.PrefixExpression)
 		if !ok {
