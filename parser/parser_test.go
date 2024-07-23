@@ -380,3 +380,37 @@ func TestFunctionLiteralParsing(t *testing.T) {
 	}
 	testInfixExpression(t, bodyStatement.Expression, "x", "+", "y")
 }
+
+func TestCallFunctionParsing(t *testing.T) {
+	input := "add(1, 2 * 3, 4 + 5);"
+
+	p := New(lexer.New(input))
+	program := p.ParseProgram()
+	checkforErrors(p, t)
+
+	l := len(program.Statements)
+	if l != 1 {
+		t.Fatalf("program.Statements does not contain %d statements. got=%d", 1, l)
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not *ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+
+	expr, ok := stmt.Expression.(*ast.CallExpression)
+	if !ok {
+		t.Errorf("stmt.Expression is not *ast.CallExpression. got=%T", stmt.Expression)
+	}
+
+	testIdentifier(t, expr.Function, "add")
+
+	l = len(expr.Arguments)
+	if l != 3 {
+		t.Fatalf("wrong length of arguments. got=%d\n", l)
+	}
+
+	testLiteralExpression(t, expr.Arguments[0], 1)
+	testInfixExpression(t, expr.Arguments[1], 2, "*", 3)
+	testInfixExpression(t, expr.Arguments[2], 4, "+", 5)
+}

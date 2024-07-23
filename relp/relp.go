@@ -4,12 +4,12 @@ import (
 	"bufio"
 	"compiler/constants"
 	"compiler/lexer"
-	"compiler/token"
+	"compiler/parser"
 	"fmt"
 	"io"
 )
 
-func StartRELP(input io.Reader, output io.Writer) {
+func StartRELP(input io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(input)
 	for {
 		fmt.Printf(constants.PROMPT)
@@ -19,8 +19,19 @@ func StartRELP(input io.Reader, output io.Writer) {
 		}
 		line := scanner.Text()
 		l := lexer.New(line)
-		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
-			fmt.Printf("%+v\n", tok)
+		p := parser.New(l)
+		program := p.ParseProgram()
+		if len(p.Errors()) != 0 {
+			printParserErrors(out, p.Errors())
+			continue
 		}
+		io.WriteString(out, program.String())
+		io.WriteString(out, "\n")
+	}
+}
+
+func printParserErrors(out io.Writer, errors []string) {
+	for _, msg := range errors {
+		io.WriteString(out, "\t"+msg+"\n")
 	}
 }
