@@ -24,6 +24,7 @@ var precedence = map[token.Type]int{
 	token.MINUS:    constants.SUM,
 	token.SLASH:    constants.PRODUCT,
 	token.ASTARISK: constants.PRODUCT,
+	token.LPAREN:   constants.CALL,
 }
 
 type (
@@ -73,6 +74,7 @@ func (p *Parser) registerInfixFunctions() {
 		token.NEQ:      p.parseInfixExpression,
 		token.LT:       p.parseInfixExpression,
 		token.GT:       p.parseInfixExpression,
+		token.LPAREN:   p.parseCallExpression,
 	}
 }
 
@@ -325,4 +327,29 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 		return nil
 	}
 	return identifiers
+}
+
+func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
+	exp := &ast.CallExpression{Token: p.curToken, Function: function}
+	exp.Arguments = p.parseCallArguments()
+	return exp
+}
+
+func (p *Parser) parseCallArguments() []ast.Expression {
+	args := []ast.Expression{}
+	if p.peekTokenIs(token.RPAREN) {
+		p.nextToken()
+		return args
+	}
+	p.nextToken()
+	args = append(args, p.parseExpression(constants.LOWEST))
+	for p.peekTokenIs(token.COMMA) {
+		p.nextToken()
+		p.nextToken()
+		args = append(args, p.parseExpression(constants.LOWEST))
+	}
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+	return args
 }
