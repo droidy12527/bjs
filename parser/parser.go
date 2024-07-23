@@ -6,7 +6,6 @@ import (
 	"compiler/lexer"
 	"compiler/token"
 	"fmt"
-	"go/token"
 	"strconv"
 )
 
@@ -52,15 +51,15 @@ func New(l lexer.Lexer) *Parser {
 
 func (p *Parser) registerPrefixFunctions() {
 	p.prefixParsingFunction = map[token.Type]prefixParsingFunction{
-		token.IDENT:  p.parseIdentifier,
-		token.INT:    p.parseIntegerLiteral,
-		token.BANG:   p.parsePrefixExpression,
-		token.MINUS:  p.parsePrefixExpression,
-		token.TRUE:   p.parseBooleanExpressions,
-		token.FALSE:  p.parseBooleanExpressions,
-		token.LPAREN: p.parseGroupedExpression,
-		token.IF:     p.parseIfExpression,
-		token.FUNCTION, p.parseFunctionLiteral,
+		token.IDENT:    p.parseIdentifier,
+		token.INT:      p.parseIntegerLiteral,
+		token.BANG:     p.parsePrefixExpression,
+		token.MINUS:    p.parsePrefixExpression,
+		token.TRUE:     p.parseBooleanExpressions,
+		token.FALSE:    p.parseBooleanExpressions,
+		token.LPAREN:   p.parseGroupedExpression,
+		token.IF:       p.parseIfExpression,
+		token.FUNCTION: p.parseFunctionLiteral,
 	}
 }
 
