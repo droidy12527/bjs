@@ -20,6 +20,10 @@ const (
 	CALL
 )
 
-// func GetGolangCrossCompilerMap() map[string]string {
-
-// }
+const (
+	LOGO = `
+ /\_/\  
+( o.o )  Pookie
+ > ^ <
+`
+)

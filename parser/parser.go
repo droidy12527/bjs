@@ -6,6 +6,7 @@ import (
 	"compiler/lexer"
 	"compiler/token"
 	"fmt"
+
 	"strconv"
 )
 
@@ -182,7 +183,6 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
-
 	return stmt
 }
 
@@ -205,29 +205,36 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	return expr
 }
 
-func (p *Parser) parseReturnStatement() ast.Statement {
-	statement := &ast.ReturnStatement{Token: p.curToken}
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
+	stmt := &ast.ReturnStatement{
+		Token: p.curToken,
+	}
 	p.nextToken()
-	if !p.curTokenIs(token.SEMICOLON) {
+	stmt.ReturnValue = p.parseExpression(constants.LOWEST)
+	for p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
-	return statement
+	return stmt
 }
 
-func (p *Parser) parseLetStatement() ast.Statement {
-	statement := &ast.LetStatement{Token: p.curToken}
+func (p *Parser) parseLetStatement() *ast.LetStatement {
+	stmt := &ast.LetStatement{Token: p.curToken}
 	if !p.expectPeek(token.IDENT) {
 		return nil
 	}
-	statement.Name = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+	stmt.Name = &ast.Identifier{
+		Token: p.curToken,
+		Value: p.curToken.Literal,
+	}
 	if !p.expectPeek(token.ASSIGN) {
 		return nil
 	}
-	// Skip till we see a semicolon for the statement end.
-	for !p.curTokenIs(token.SEMICOLON) {
+	p.nextToken()
+	stmt.Value = p.parseExpression(constants.LOWEST)
+	for p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
-	return statement
+	return stmt
 }
 
 func (p *Parser) parseIfExpression() ast.Expression {

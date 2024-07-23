@@ -1,6 +1,7 @@
 package main
 
 import (
+	"compiler/constants"
 	"compiler/relp"
 	"fmt"
 	"os"
@@ -18,6 +19,8 @@ func main() {
 	// readFile()
 	tokenDebug := os.Getenv("POOKIE_DEBUG")
 	if tokenDebug == "true" {
+		fmt.Printf(constants.LOGO)
+		fmt.Println("JavaScript For Servers, Blazingly Fast and Compiled")
 		fmt.Println("Welcome to pookie lang debugger, This is token debugger")
 		fmt.Println("Please type in expressions to Parse: ")
 		relp.StartRELP(os.Stdin, os.Stdout)
