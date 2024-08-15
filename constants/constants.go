@@ -10,6 +10,11 @@ const (
 )
 
 const (
+	INTEGER_OBJECT = "INTEGER"
+	BOOLEAN_OBJECT = "BOOLEAN"
+)
+
+const (
 	_ int = iota
 	LOWEST
 	EQUALS
