@@ -12,6 +12,7 @@ const (
 const (
 	INTEGER_OBJECT = "INTEGER"
 	BOOLEAN_OBJECT = "BOOLEAN"
+	NULL_OBJECT    = "NULL"
 )
 
 const (
