@@ -7,7 +7,8 @@ import (
 
 type ObjectType string
 
-// Object representation for transpiling
+// Object representation for transpiling and also object representation in base language, ie GO for making sure
+// that the object has given memory location, as further the objects will be needed to access the values
 
 type Object interface {
 	Type() ObjectType
