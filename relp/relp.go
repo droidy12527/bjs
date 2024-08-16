@@ -3,6 +3,7 @@ package relp
 import (
 	"bufio"
 	"compiler/constants"
+	"compiler/evaluator"
 	"compiler/lexer"
 	"compiler/parser"
 	"fmt"
@@ -25,8 +26,11 @@ func StartRELP(input io.Reader, out io.Writer) {
 			printParserErrors(out, p.Errors())
 			continue
 		}
-		io.WriteString(out, program.String())
-		io.WriteString(out, "\n")
+		evaluated := evaluator.Eval(program)
+		if evaluated != nil {
+			io.WriteString(out, evaluated.Inspect())
+			io.WriteString(out, "\n")
+		}
 	}
 }
 
