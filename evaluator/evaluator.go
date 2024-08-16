@@ -31,8 +31,53 @@ func Eval(node ast.Node) object.Object {
 	case *ast.PrefixExpression:
 		right := Eval(node.Right)
 		return evalPrefixExpression(node.Operator, right)
+	case *ast.InfixExpression:
+		left := Eval(node.Left)
+		right := Eval(node.Right)
+		return evalInfixExpression(node.Operator, left, right)
 	}
 	return nil
+}
+
+// Eval Inflix expression returns back the infix expression, It checks if both of the right and left nodes of the ast
+// are integer, If so then it returns back the integer object back
+func evalInfixExpression(operator string, left, right object.Object) object.Object {
+	switch {
+	case left.Type() == constants.INTEGER_OBJECT && right.Type() == constants.INTEGER_OBJECT:
+		return evalIntegerInflixExpression(operator, left, right)
+	case operator == "==":
+		return nativeBooleanToBooleanObject(left == right)
+	case operator == "!=":
+		return nativeBooleanToBooleanObject(left != right)
+	default:
+		return NULL
+	}
+}
+
+// Eval integer Inflix expression just switches the string that is given and then returns back the computation
+func evalIntegerInflixExpression(operator string, left, right object.Object) object.Object {
+	leftValue := left.(*object.Integer).Value
+	rightValue := right.(*object.Integer).Value
+	switch operator {
+	case "+":
+		return &object.Integer{Value: leftValue + rightValue}
+	case "-":
+		return &object.Integer{Value: leftValue - rightValue}
+	case "*":
+		return &object.Integer{Value: leftValue * rightValue}
+	case "/":
+		return &object.Integer{Value: leftValue / rightValue}
+	case "<":
+		return nativeBooleanToBooleanObject(leftValue < rightValue)
+	case ">":
+		return nativeBooleanToBooleanObject(leftValue > rightValue)
+	case "==":
+		return nativeBooleanToBooleanObject(leftValue == rightValue)
+	case "!=":
+		return nativeBooleanToBooleanObject(leftValue != rightValue)
+	default:
+		return NULL
+	}
 }
 
 // check for prefix operator and then check for what to do next
