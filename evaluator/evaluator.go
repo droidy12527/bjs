@@ -39,6 +39,8 @@ func Eval(node ast.Node) object.Object {
 	return nil
 }
 
+// Eval Inflix expression returns back the infix expression, It checks if both of the right and left nodes of the ast
+// are integer, If so then it returns back the integer object back
 func evalInfixExpression(operator string, left, right object.Object) object.Object {
 	switch {
 	case left.Type() == constants.INTEGER_OBJECT && right.Type() == constants.INTEGER_OBJECT:
@@ -48,6 +50,7 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 	}
 }
 
+// Eval integer Inflix expression just switches the string that is given and then returns back the computation
 func evalIntegerInflixExpression(operator string, left, right object.Object) object.Object {
 	leftValue := left.(*object.Integer).Value
 	rightValue := right.(*object.Integer).Value
