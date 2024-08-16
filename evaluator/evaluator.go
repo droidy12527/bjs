@@ -5,6 +5,10 @@ import (
 	"compiler/object"
 )
 
+// Function evaluator mrecieves ast.Node and stores into memory for representation
+// Eval returns object which is stored into memory which is represented in golang struct
+// For debugging purpose the struct takes more memory in ram.
+// This will be fixed in upcoming versions
 func Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
@@ -17,6 +21,7 @@ func Eval(node ast.Node) object.Object {
 	return nil
 }
 
+// If eval statement receives ast statements then it parses and returns the object result back
 func evalStatements(statements []ast.Statement) object.Object {
 	var result object.Object
 	for _, statement := range statements {
