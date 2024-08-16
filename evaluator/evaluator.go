@@ -63,6 +63,14 @@ func evalIntegerInflixExpression(operator string, left, right object.Object) obj
 		return &object.Integer{Value: leftValue * rightValue}
 	case "/":
 		return &object.Integer{Value: leftValue / rightValue}
+	case "<":
+		return nativeBooleanToBooleanObject(leftValue < rightValue)
+	case ">":
+		return nativeBooleanToBooleanObject(leftValue > rightValue)
+	case "==":
+		return nativeBooleanToBooleanObject(leftValue == rightValue)
+	case "!=":
+		return nativeBooleanToBooleanObject(leftValue != rightValue)
 	default:
 		return NULL
 	}
