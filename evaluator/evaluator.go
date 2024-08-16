@@ -29,6 +29,10 @@ func Eval(node ast.Node) object.Object {
 	return nil
 }
 
+// This function is optimisation to return back the value of boolean
+// As boolean can be of only type true and false we can keep them in memory once someone allocates them
+// Then we can reference via address to the same boolean rather than creating new boolean in memory location every time
+// This saves us time and also makes sure that more memory is not allocated for garbage collector to sweep
 func nativeBooleanToBooleanObject(value bool) object.Object {
 	if value {
 		return TRUE
