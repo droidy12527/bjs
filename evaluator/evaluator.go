@@ -180,16 +180,3 @@ func nativeBooleanToBooleanObject(value bool) object.Object {
 	}
 	return FALSE
 }
-
-// If eval statement receives ast statements then it parses and returns the object result back
-func evalStatements(statements []ast.Statement) object.Object {
-	var result object.Object
-	for _, statement := range statements {
-		result = Eval(statement)
-		returnValue, ok := result.(*object.ReturnValue)
-		if ok {
-			return returnValue.Value
-		}
-	}
-	return result
-}
