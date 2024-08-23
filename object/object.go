@@ -23,6 +23,10 @@ type Boolean struct {
 	Value bool
 }
 
+type ReturnValue struct {
+	Value Object
+}
+
 type Null struct {
 }
 
@@ -34,3 +38,6 @@ func (b *Boolean) Type() ObjectType { return constants.BOOLEAN_OBJECT }
 
 func (n *Null) Inspect() string  { return "null" }
 func (n *Null) Type() ObjectType { return constants.NULL_OBJECT }
+
+func (rv *ReturnValue) Type() ObjectType { return constants.RETURN_VALUE_OBJECT }
+func (rv *ReturnValue) Inspect() string  { return rv.Value.Inspect() }
