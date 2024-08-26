@@ -27,6 +27,10 @@ type ReturnValue struct {
 	Value Object
 }
 
+type Error struct {
+	Message string
+}
+
 type Null struct {
 }
 
@@ -41,3 +45,6 @@ func (n *Null) Type() ObjectType { return constants.NULL_OBJECT }
 
 func (rv *ReturnValue) Type() ObjectType { return constants.RETURN_VALUE_OBJECT }
 func (rv *ReturnValue) Inspect() string  { return rv.Value.Inspect() }
+
+func (e *Error) Type() ObjectType { return constants.ERROR_OBJECT }
+func (e *Error) Inspect() string  { return "ERROR: " + e.Message }
