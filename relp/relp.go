@@ -5,6 +5,7 @@ import (
 	"compiler/constants"
 	"compiler/evaluator"
 	"compiler/lexer"
+	"compiler/object"
 	"compiler/parser"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 
 func StartRELP(input io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(input)
+	env := object.NewEnviornment()
 	for {
 		fmt.Printf(constants.PROMPT)
 		scanned := scanner.Scan()
@@ -26,7 +28,7 @@ func StartRELP(input io.Reader, out io.Writer) {
 			printParserErrors(out, p.Errors())
 			continue
 		}
-		evaluated := evaluator.Eval(program)
+		evaluated := evaluator.Eval(program, env)
 		if evaluated != nil {
 			io.WriteString(out, evaluated.Inspect())
 			io.WriteString(out, "\n")
