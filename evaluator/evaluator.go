@@ -27,6 +27,8 @@ func Eval(node ast.Node, env *object.Enviornment) object.Object {
 		return Eval(node.Expression, env)
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
+	case *ast.StringLiteral:
+		return &object.String{Value: node.Value}
 	case *ast.Boolean:
 		return nativeBooleanToBooleanObject(node.Value)
 	case *ast.LetStatement:
@@ -57,6 +59,20 @@ func Eval(node ast.Node, env *object.Enviornment) object.Object {
 		return evalBlockStatement(node, env)
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
+	case *ast.FunctionLiteral:
+		params := node.Parameters
+		body := node.Body
+		return &object.Function{Parameters: params, Env: env, Body: body}
+	case *ast.CallExpression:
+		function := Eval(node.Function, env)
+		if isError(function) {
+			return function
+		}
+		args := evalExpressions(node.Arguments, env)
+		if len(args) == 1 && isError(args[0]) {
+			return args[0]
+		}
+		return applyFunction(function, args)
 	case *ast.ReturnStatement:
 		value := Eval(node.ReturnValue, env)
 		if isError(value) {
@@ -65,6 +81,46 @@ func Eval(node ast.Node, env *object.Enviornment) object.Object {
 		return &object.ReturnValue{Value: value}
 	}
 	return nil
+}
+
+func applyFunction(fn object.Object, args []object.Object) object.Object {
+	switch fn := fn.(type) {
+	case *object.Function:
+		extendedEnv := extendedFunctionEnviornment(fn, args)
+		evaluated := Eval(fn.Body, extendedEnv)
+		return unwrapReturnValue(evaluated)
+	case *object.Builtin:
+		return fn.Fn(args...)
+	default:
+		return newError("not a function: %s", fn.Type())
+	}
+}
+
+func extendedFunctionEnviornment(fn *object.Function, args []object.Object) *object.Enviornment {
+	env := object.NewEnclosedEnviornment(fn.Env)
+	for paramIdx, param := range fn.Parameters {
+		env.Set(param.Value, args[paramIdx])
+	}
+	return env
+}
+
+func unwrapReturnValue(obj object.Object) object.Object {
+	if returnValue, ok := obj.(*object.ReturnValue); ok {
+		return returnValue.Value
+	}
+	return obj
+}
+
+func evalExpressions(exps []ast.Expression, env *object.Enviornment) []object.Object {
+	var result []object.Object
+	for _, e := range exps {
+		evaluated := Eval(e, env)
+		if isError(evaluated) {
+			return []object.Object{evaluated}
+		}
+		result = append(result, evaluated)
+	}
+	return result
 }
 
 func evalProgram(node *ast.Program, env *object.Enviornment) object.Object {
@@ -83,10 +139,14 @@ func evalProgram(node *ast.Program, env *object.Enviornment) object.Object {
 
 func evalIdentifier(node *ast.Identifier, env *object.Enviornment) object.Object {
 	val, ok := env.Get(node.Value)
-	if !ok {
-		return newError("identifier not found: " + node.Value)
+	if ok {
+		return val
 	}
-	return val
+	builtin, ok := builtins[node.Value]
+	if ok {
+		return builtin
+	}
+	return newError("identifier not found: " + node.Value)
 }
 
 func evalBlockStatement(block *ast.BlockStatement, env *object.Enviornment) object.Object {
@@ -147,6 +207,8 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		return nativeBooleanToBooleanObject(left != right)
 	case left.Type() != right.Type():
 		return newError("type mismatch: %s %s %s", left.Type(), operator, right.Type())
+	case left.Type() == constants.STRING_OBJECT && right.Type() == constants.STRING_OBJECT:
+		return evalStringInfixExpression(operator, left, right)
 	default:
 		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
@@ -196,6 +258,15 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	}
 	value := right.(*object.Integer).Value
 	return &object.Integer{Value: -value}
+}
+
+func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
+	if operator != "+" {
+		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
+	}
+	leftVal := left.(*object.String).Value
+	rightVal := right.(*object.String).Value
+	return &object.String{Value: leftVal + rightVal}
 }
 
 // This function inverts the bang operator by sending back object

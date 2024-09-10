@@ -48,6 +48,8 @@ func TestNexttoken(t *testing.T) {
 	b = nil;
 
 	macro(x, y) { x + y; };
+	"golang"
+	"go lang"
 	`
 
 	tests := []struct {
@@ -200,6 +202,8 @@ func TestNexttoken(t *testing.T) {
 		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
 		{token.SEMICOLON, ";"},
+		{token.STRING, "golang"},
+		{token.STRING, "go lang"},
 		{token.EOF, ""},
 	}
 
