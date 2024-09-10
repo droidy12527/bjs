@@ -17,6 +17,7 @@ const (
 	ERROR_OBJECT        = "ERROR"
 	FUNCTION_OBJ        = "FUNCTION"
 	STRING_OBJECT       = "STRING"
+	BUILTIN_OBJECT      = "BUILTIN"
 )
 
 const (

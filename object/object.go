@@ -10,6 +10,8 @@ import (
 
 type ObjectType string
 
+type BuiltinFunction func(args ...Object) Object
+
 // Object representation for transpiling and also object representation in base language, ie GO for making sure
 // that the object has given memory location, as further the objects will be needed to access the values
 
@@ -47,6 +49,10 @@ type Function struct {
 	Env        *Enviornment
 }
 
+type Builtin struct {
+	Fn BuiltinFunction
+}
+
 func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
 func (i *Integer) Type() ObjectType { return constants.INTEGER_OBJECT }
 
@@ -80,3 +86,6 @@ func (f *Function) Inspect() string {
 
 func (s *String) Type() ObjectType { return constants.STRING_OBJECT }
 func (s *String) Inspect() string  { return s.Value }
+
+func (b *Builtin) Type() ObjectType { return constants.BUILTIN_OBJECT }
+func (b *Builtin) Inspect() string  { return "builtin function" }
