@@ -17,6 +17,8 @@ func (e *Enviornment) Set(name string, value Object) Object {
 	return value
 }
 
+// Get the outer and inner scope for checking in the functiond with local variables
+// This supports the closure for the interpreter
 func (e *Enviornment) Get(name string) (Object, bool) {
 	obj, ok := e.store[name]
 	if !ok && e.outer != nil {
