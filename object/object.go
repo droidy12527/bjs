@@ -37,6 +37,10 @@ type Error struct {
 type Null struct {
 }
 
+type String struct {
+	Value string
+}
+
 type Function struct {
 	Parameters []*ast.Identifier
 	Body       *ast.BlockStatement
@@ -73,3 +77,6 @@ func (f *Function) Inspect() string {
 	out.WriteString("\n}")
 	return out.String()
 }
+
+func (s *String) Type() ObjectType { return constants.STRING_OBJECT }
+func (s *String) Inspect() string  { return s.Value }
