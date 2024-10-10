@@ -158,9 +158,7 @@ func (p *Parser) ParseProgram() *ast.Program {
 	program.Statements = []ast.Statement{}
 	for p.curToken.Type != token.EOF {
 		statement := p.parseStatement()
-		if statement != nil {
-			program.Statements = append(program.Statements, statement)
-		}
+		program.Statements = append(program.Statements, statement)
 		p.nextToken()
 	}
 	return program
@@ -270,9 +268,8 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	}
 	p.nextToken()
 	for !p.curTokenIs(token.RBRACE) && !p.curTokenIs(token.EOF) {
-		if stmt := p.parseStatement(); stmt != nil {
-			block.Statements = append(block.Statements, stmt)
-		}
+		stmt := p.parseStatement()
+		block.Statements = append(block.Statements, stmt)
 		p.nextToken()
 	}
 	return block
