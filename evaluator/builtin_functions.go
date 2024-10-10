@@ -3,7 +3,7 @@ package evaluator
 import "compiler/object"
 
 // Bultin functions to check on, Make and add more builtin functions here.
-// Retuns back the pointer to builktin object.
+// Retuns back the pointer to builtin object.
 var builtins = map[string]*object.Builtin{
 	"len": {
 		Fn: func(args ...object.Object) object.Object {
