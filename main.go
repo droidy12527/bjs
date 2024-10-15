@@ -17,7 +17,7 @@ import (
 
 func main() {
 	// readFile()
-	tokenDebug := os.Getenv("POOKIE_DEBUG")
+	tokenDebug := os.Getenv("BJS_DEBUG")
 	if tokenDebug == "true" {
 		fmt.Printf(constants.LOGO)
 		fmt.Println("JavaScript For Servers, Blazingly Fast and Compiled")
@@ -36,7 +36,7 @@ func readFile() {
 	}
 	filename := osArgs[1]
 	fileExtension := strings.Split(filename, ".")[1]
-	if fileExtension != "pookie" {
+	if fileExtension != "bjs" {
 		panic("file extension is wrong, make sure you are using pookie file extension.")
 	}
 }

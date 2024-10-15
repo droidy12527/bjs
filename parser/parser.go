@@ -63,6 +63,7 @@ func (p *Parser) registerPrefixFunctions() {
 		token.IF:       p.parseIfExpression,
 		token.FUNCTION: p.parseFunctionLiteral,
 		token.STRING:   p.parseStringLiteral,
+		token.LBRACKET: p.parseArrayLiteral,
 	}
 }
 
@@ -157,9 +158,7 @@ func (p *Parser) ParseProgram() *ast.Program {
 	program.Statements = []ast.Statement{}
 	for p.curToken.Type != token.EOF {
 		statement := p.parseStatement()
-		if statement != nil {
-			program.Statements = append(program.Statements, statement)
-		}
+		program.Statements = append(program.Statements, statement)
 		p.nextToken()
 	}
 	return program
@@ -269,9 +268,8 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	}
 	p.nextToken()
 	for !p.curTokenIs(token.RBRACE) && !p.curTokenIs(token.EOF) {
-		if stmt := p.parseStatement(); stmt != nil {
-			block.Statements = append(block.Statements, stmt)
-		}
+		stmt := p.parseStatement()
+		block.Statements = append(block.Statements, stmt)
 		p.nextToken()
 	}
 	return block
@@ -339,29 +337,35 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 
 func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
 	exp := &ast.CallExpression{Token: p.curToken, Function: function}
-	exp.Arguments = p.parseCallArguments()
+	exp.Arguments = p.parseExpressionList(token.RPAREN)
 	return exp
-}
-
-func (p *Parser) parseCallArguments() []ast.Expression {
-	args := []ast.Expression{}
-	if p.peekTokenIs(token.RPAREN) {
-		p.nextToken()
-		return args
-	}
-	p.nextToken()
-	args = append(args, p.parseExpression(constants.LOWEST))
-	for p.peekTokenIs(token.COMMA) {
-		p.nextToken()
-		p.nextToken()
-		args = append(args, p.parseExpression(constants.LOWEST))
-	}
-	if !p.expectPeek(token.RPAREN) {
-		return nil
-	}
-	return args
 }
 
 func (p *Parser) parseStringLiteral() ast.Expression {
 	return &ast.StringLiteral{Token: p.curToken, Value: p.curToken.Literal}
+}
+
+func (p *Parser) parseArrayLiteral() ast.Expression {
+	array := &ast.ArrayLiteral{Token: p.curToken}
+	array.Elements = p.parseExpressionList(token.RBRACKET)
+	return array
+}
+
+func (p *Parser) parseExpressionList(end token.Type) []ast.Expression {
+	list := []ast.Expression{}
+	if p.peekTokenIs(end) {
+		p.nextToken()
+		return list
+	}
+	p.nextToken()
+	list = append(list, p.parseExpression(constants.LOWEST))
+	for p.peekTokenIs(token.COMMA) {
+		p.nextToken()
+		p.nextToken()
+		list = append(list, p.parseExpression(constants.LOWEST))
+	}
+	if !p.expectPeek(end) {
+		return nil
+	}
+	return list
 }
