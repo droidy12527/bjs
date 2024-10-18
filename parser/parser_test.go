@@ -7,6 +7,8 @@ import (
 	"testing"
 )
 
+// TODO: Add test case for array index parsing, should return back array ast node back.
+
 func TestLetStatement(t *testing.T) {
 	input := `
 		let x = 1;
