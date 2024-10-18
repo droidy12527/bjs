@@ -34,7 +34,7 @@ const (
 const (
 	LOGO = `
  /\_/\  
-( o.o )  Pookie
+( o.o )  BJS
  > ^ <
 `
 )
