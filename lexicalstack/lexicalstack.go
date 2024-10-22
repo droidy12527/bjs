@@ -6,17 +6,11 @@ import (
 	"fmt"
 )
 
-/*
-	Using heap memory for parsing the language with less complexity for pushing and popping.
-	Gives access to free memory rather than allocating a large amount of memory at start for parsing the code.
-
-	TODO:
-	1. Memory leaks and issues to be kept in mind.
-	2. Add the keyword specifier in the map itself
-*/
+// TODO: Remove this code block as this is not longer needed
+// Lexical stack is not in use
 
 type StackNode struct {
-	OperatorType string	
+	OperatorType string
 	Operator     string
 	NextNode     *StackNode
 }
