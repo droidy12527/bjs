@@ -39,4 +39,21 @@ var builtins = map[string]*object.Builtin{
 			return NULL
 		},
 	},
+	// Gets the last element in an array
+	"last": {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1", len(args))
+			}
+			if args[0].Type() != constants.ARRAY_OBJECT {
+				return newError("argument to first is invalid. got=%s", args[0].Type())
+			}
+			arr := args[0].(*object.Array)
+			len := len(arr.Elements)
+			if len > 0 {
+				return arr.Elements[len-1]
+			}
+			return NULL
+		},
+	},
 }
