@@ -39,7 +39,7 @@ var builtins = map[string]*object.Builtin{
 			return NULL
 		},
 	},
-	// Gets the last element in an array
+	// Gets the last element in an array and then push it to commandline for interpreter
 	"last": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
