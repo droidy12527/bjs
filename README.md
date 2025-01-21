@@ -25,6 +25,7 @@ BJS is a powerful compiled language designed to bring blazing-fast performance t
 
 ## Installation
 
+```bash
 # Set debug mode
 export BJS_DEBUG=true
 
