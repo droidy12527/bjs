@@ -19,6 +19,8 @@ export BJS_DEBUG=true
 # Start the BJS interpreter
 go run .
 
+```
+
 ## Future Releases
 
 ### Compilation Benefits (Coming Soon)
