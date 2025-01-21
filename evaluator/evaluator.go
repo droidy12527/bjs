@@ -18,7 +18,8 @@ var (
 // Function evaluator mrecieves ast.Node and stores into memory for representation
 // Eval returns object which is stored into memory which is represented in golang struct
 // For debugging purpose the struct takes more memory in ram.
-// This will be fixed in upcoming versions
+// This will be fixed in upcoming versions of BJS, Reference to objects are provided in this case which contains
+// debugging info as well.
 func Eval(node ast.Node, env *object.Enviornment) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
@@ -45,6 +46,12 @@ func Eval(node ast.Node, env *object.Enviornment) object.Object {
 			return right
 		}
 		return evalPrefixExpression(node.Operator, right)
+	case *ast.ArrayLiteral:
+		elements := evalExpressions(node.Elements, env)
+		if len(elements) == 1 && isError(elements[0]) {
+			return elements[0]
+		}
+		return &object.Array{Elements: elements}
 	case *ast.InfixExpression:
 		left := Eval(node.Left, env)
 		if isError(left) {
