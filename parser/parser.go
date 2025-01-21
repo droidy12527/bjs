@@ -26,6 +26,7 @@ var precedence = map[token.Type]int{
 	token.SLASH:    constants.PRODUCT,
 	token.ASTARISK: constants.PRODUCT,
 	token.LPAREN:   constants.CALL,
+	token.LBRACKET: constants.INDEX,
 }
 
 type (
