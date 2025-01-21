@@ -52,6 +52,16 @@ func Eval(node ast.Node, env *object.Enviornment) object.Object {
 			return elements[0]
 		}
 		return &object.Array{Elements: elements}
+	case *ast.IndexExpression:
+		left := Eval(node.Left, env)
+		if isError(left) {
+			return left
+		}
+		index := Eval(node.Index, env)
+		if isError(index) {
+			return index
+		}
+		return evalIndexExpression(left, index)
 	case *ast.InfixExpression:
 		left := Eval(node.Left, env)
 		if isError(left) {
@@ -88,6 +98,34 @@ func Eval(node ast.Node, env *object.Enviornment) object.Object {
 		return &object.ReturnValue{Value: value}
 	}
 	return nil
+}
+
+// This function gets array left expression and index that was provided in AST
+// We compare that if array is of type array object, If not so we return back error stating this is not supported
+// Also we check if the index is of type Integer not any other type
+// If we found the right match then we check and evaluate the array and index
+func evalIndexExpression(left, index object.Object) object.Object {
+	switch {
+	case left.Type() == constants.ARRAY_OBJECT && index.Type() == constants.INTEGER_OBJECT:
+		return evalArrayIndexExpression(left, index)
+	default:
+		return newError("index operator has wrong type that is not supported yet %s", left.Type())
+	}
+}
+
+// This function returns back the element or NULL if not found
+func evalArrayIndexExpression(array, index object.Object) object.Object {
+	// Check if the array is of right type before proceeding, If not make it the right type
+	arrayObject := array.(*object.Array)
+	// Get the index of the element in integer format
+	idx := index.(*object.Integer).Value
+	// Get the max boundaries from where we can check in memory, This will help us
+	// with not overwriting some data in memory
+	max := int64(len(arrayObject.Elements) - 1)
+	if idx < 0 || idx > max {
+		return NULL
+	}
+	return arrayObject.Elements[idx]
 }
 
 func applyFunction(fn object.Object, args []object.Object) object.Object {
