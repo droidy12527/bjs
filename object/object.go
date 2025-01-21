@@ -53,6 +53,10 @@ type Builtin struct {
 	Fn BuiltinFunction
 }
 
+type Array struct {
+	Elements []Object
+}
+
 func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
 func (i *Integer) Type() ObjectType { return constants.INTEGER_OBJECT }
 
@@ -89,3 +93,16 @@ func (s *String) Inspect() string  { return s.Value }
 
 func (b *Builtin) Type() ObjectType { return constants.BUILTIN_OBJECT }
 func (b *Builtin) Inspect() string  { return "builtin function" }
+
+func (ao *Array) Type() ObjectType { return constants.ARRAY_OBJECT }
+func (ao *Array) Inspect() string {
+	var out bytes.Buffer
+	elements := []string{}
+	for _, e := range ao.Elements {
+		elements = append(elements, e.Inspect())
+	}
+	out.WriteString("[")
+	out.WriteString(strings.Join(elements, ", "))
+	out.WriteString("]")
+	return out.String()
+}
