@@ -7,6 +7,8 @@ import (
 
 // Bultin functions to check on, Make and add more builtin functions here.
 // Retuns back the pointer to builtin object.
+// TODO: There is repetative checks for single array fn, Make sure you put them in single array checker code
+// This will make things simpler
 var builtins = map[string]*object.Builtin{
 	"len": {
 		Fn: func(args ...object.Object) object.Object {
