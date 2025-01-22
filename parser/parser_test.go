@@ -489,9 +489,9 @@ func TestParsingHashLiteralsStringKeys(t *testing.T) {
 	hash, ok := stmt.Expression.(*ast.HashLiteral)
 	if !ok {
 		t.Fatalf("exp is not ast.HashLiteral. got=%T", stmt.Expression)
-		if len(hash.Pairs) != 3 {
-			t.Errorf("hash.Pairs has wrong length. got=%d", len(hash.Pairs))
-		}
+	}
+	if len(hash.Pairs) != 3 {
+		t.Errorf("hash.Pairs has wrong length. got=%d", len(hash.Pairs))
 	}
 	expected := map[string]int64{
 		"one":   1,
