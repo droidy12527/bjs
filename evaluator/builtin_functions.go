@@ -56,4 +56,23 @@ var builtins = map[string]*object.Builtin{
 			return NULL
 		},
 	},
+	// Rest function for array returns you back the array popping the first element from array.
+	"rest": {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1", len(args))
+			}
+			if args[0].Type() != constants.ARRAY_OBJECT {
+				return newError("argument to first is invalid. got=%s", args[0].Type())
+			}
+			arr := args[0].(*object.Array)
+			length := len(arr.Elements)
+			if length > 0 {
+				newElements := make([]object.Object, length-1)
+				copy(newElements, arr.Elements[1:length])
+				return &object.Array{Elements: newElements}
+			}
+			return NULL
+		},
+	},
 }
