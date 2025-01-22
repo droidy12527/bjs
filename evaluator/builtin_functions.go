@@ -77,4 +77,21 @@ var builtins = map[string]*object.Builtin{
 			return NULL
 		},
 	},
+	// Push function pushes things to array
+	"push": {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 2 {
+				return newError("wrong number of arguments. got=%d, want=1", len(args))
+			}
+			if args[0].Type() != constants.ARRAY_OBJECT {
+				return newError("argument to first is invalid. got=%s", args[0].Type())
+			}
+			arr := args[0].(*object.Array)
+			length := len(arr.Elements)
+			newElements := make([]object.Object, length+1)
+			copy(newElements, arr.Elements)
+			newElements[length] = args[1]
+			return &object.Array{Elements: newElements}
+		},
+	},
 }
