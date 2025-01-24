@@ -19,6 +19,7 @@ const (
 	STRING_OBJECT       = "STRING"
 	BUILTIN_OBJECT      = "BUILTIN"
 	ARRAY_OBJECT        = "ARRAY"
+	HASH_OBJECT         = "HASH"
 )
 
 const (
