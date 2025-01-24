@@ -110,9 +110,25 @@ func evalIndexExpression(left, index object.Object) object.Object {
 	switch {
 	case left.Type() == constants.ARRAY_OBJECT && index.Type() == constants.INTEGER_OBJECT:
 		return evalArrayIndexExpression(left, index)
+	case left.Type() == constants.HASH_OBJECT:
+		return evalHashIndexExpression(left, index)
 	default:
 		return newError("index operator has wrong type that is not supported yet %s", left.Type())
 	}
+}
+
+// This function returns back the hashvalue for the given index
+func evalHashIndexExpression(hash, index object.Object) object.Object {
+	hashObject := hash.(*object.Hash)
+	key, ok := index.(object.Hashable)
+	if !ok {
+		return newError("unusable as hash key: %s", index.Type())
+	}
+	pair, ok := hashObject.Pairs[key.HashKey()]
+	if !ok {
+		return NULL
+	}
+	return pair.Value
 }
 
 // This function returns back the element or NULL if not found
@@ -130,7 +146,7 @@ func evalArrayIndexExpression(array, index object.Object) object.Object {
 	return arrayObject.Elements[idx]
 }
 
-// Evaluates hash literal and returns back object which has hashpair.
+// Evaluates hash literal and returns back object which is hash.
 func evaluateHashLiteral(node *ast.HashLiteral, env *object.Enviornment) object.Object {
 	pairs := make(map[object.HashKey]object.HashPair)
 	// Get keynodes and value nodes from pairs
