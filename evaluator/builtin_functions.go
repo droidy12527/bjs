@@ -3,6 +3,7 @@ package evaluator
 import (
 	"compiler/constants"
 	"compiler/object"
+	"fmt"
 )
 
 // Bultin functions to check on, Make and add more builtin functions here.
@@ -92,6 +93,16 @@ var builtins = map[string]*object.Builtin{
 			copy(newElements, arr.Elements)
 			newElements[length] = args[1]
 			return &object.Array{Elements: newElements}
+		},
+	},
+	// Prints string to console
+	// FIX: Always returns a null after printing strings to console.
+	"prints": {
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+			return NULL
 		},
 	},
 }
