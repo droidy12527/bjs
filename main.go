@@ -21,7 +21,7 @@ func main() {
 	if tokenDebug == "true" {
 		fmt.Printf(constants.LOGO)
 		fmt.Println("JavaScript For Servers, Blazingly Fast and Compiled")
-		fmt.Println("Welcome to pookie lang debugger, This is your new RELP for debugging purpose")
+		fmt.Println("Welcome to BJS lang debugger, This is your new RELP for debugging purpose")
 		fmt.Println("Please type in expressions to Debug: ")
 		relp.StartRELP(os.Stdin, os.Stdout)
 	} else {

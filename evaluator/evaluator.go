@@ -32,6 +32,8 @@ func Eval(node ast.Node, env *object.Enviornment) object.Object {
 		return &object.String{Value: node.Value}
 	case *ast.Boolean:
 		return nativeBooleanToBooleanObject(node.Value)
+	case *ast.HashLiteral:
+		return evaluateHashLiteral(node, env)
 	case *ast.LetStatement:
 		val := Eval(node.Value, env)
 		if isError(val) {
@@ -108,9 +110,25 @@ func evalIndexExpression(left, index object.Object) object.Object {
 	switch {
 	case left.Type() == constants.ARRAY_OBJECT && index.Type() == constants.INTEGER_OBJECT:
 		return evalArrayIndexExpression(left, index)
+	case left.Type() == constants.HASH_OBJECT:
+		return evalHashIndexExpression(left, index)
 	default:
 		return newError("index operator has wrong type that is not supported yet %s", left.Type())
 	}
+}
+
+// This function returns back the hashvalue for the given index
+func evalHashIndexExpression(hash, index object.Object) object.Object {
+	hashObject := hash.(*object.Hash)
+	key, ok := index.(object.Hashable)
+	if !ok {
+		return newError("unusable as hash key: %s", index.Type())
+	}
+	pair, ok := hashObject.Pairs[key.HashKey()]
+	if !ok {
+		return NULL
+	}
+	return pair.Value
 }
 
 // This function returns back the element or NULL if not found
@@ -126,6 +144,32 @@ func evalArrayIndexExpression(array, index object.Object) object.Object {
 		return NULL
 	}
 	return arrayObject.Elements[idx]
+}
+
+// Evaluates hash literal and returns back object which is hash.
+func evaluateHashLiteral(node *ast.HashLiteral, env *object.Enviornment) object.Object {
+	pairs := make(map[object.HashKey]object.HashPair)
+	// Get keynodes and value nodes from pairs
+	for keyNode, valueNode := range node.Pairs {
+		// Check if key is in right form and right object type
+		key := Eval(keyNode, env)
+		if isError(key) {
+			return key
+		}
+		// Check if the key implemnents hashable function, Eg; Keys can be int, bool or string
+		hashkey, ok := key.(object.Hashable)
+		if !ok {
+			return newError("unusable as hash key: %s", key.Type())
+		}
+		value := Eval(valueNode, env)
+		if isError(value) {
+			return value
+		}
+		// Get the hashkey
+		hashed := hashkey.HashKey()
+		pairs[hashed] = object.HashPair{Key: key, Value: value}
+	}
+	return &object.Hash{Pairs: pairs}
 }
 
 func applyFunction(fn object.Object, args []object.Object) object.Object {
