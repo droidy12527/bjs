@@ -42,7 +42,7 @@ func Lookup(op byte) (*Defination, error) {
 }
 
 // Creates an slice of byte which has opcode and operand and returns it back
-
+// Thsi function posses risk of generating empty bytecode instructions
 func Make(op Opcode, operands ...int) []byte {
 	def, ok := definations[op]
 	if !ok {

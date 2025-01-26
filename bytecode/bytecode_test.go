@@ -11,7 +11,7 @@ func TestMake(t *testing.T) {
 		{OpConstant, []int{65534}, []byte{byte(OpConstant), 255, 254}},
 	}
 	for _, tt := range tests {
-		instruction := make(type, 0)(tt.op, tt.operands...)
+		instruction := Make(tt.op, tt.operands...)
 		if len(instruction) != len(tt.expected) {
 			t.Errorf("instruction has wrong length. want=%d, got=%d", len(tt.expected), len(instruction))
 		}
