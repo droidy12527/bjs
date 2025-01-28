@@ -21,6 +21,23 @@ go run .
 
 ```
 
+## Additionally you can start the compiler mode by using the following command: (Experimental)
+```bash
+# Set Compile mode
+export BJS_COMPILE_MODE=true
+
+# Start the BJS compiler
+go run .
+
+```
+
+## You can compile the codebase to native binary by using the following code
+```bash
+# Export as single file and add to compuer ENV for accessing from anywhere
+go build -o bjs
+
+```
+
 ## Future Releases
 
 ### Compilation Benefits (Coming Soon)
