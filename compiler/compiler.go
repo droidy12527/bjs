@@ -5,6 +5,7 @@ import (
 	"compiler/ast"
 	"compiler/code"
 	"compiler/object"
+	"fmt"
 )
 
 // Compiler is a struct that contains bytecode instructions and constants
@@ -58,6 +59,14 @@ func (c *Compiler) Compile(node ast.Node) error {
 		if err != nil {
 			return err
 		}
+		// Check which operator is there, According to that emit to instruction stack
+		switch node.Operator {
+		case "+":
+			c.emit(code.OpAdd)
+		default:
+			return fmt.Errorf("unknown operator founf %s", node.Operator)
+		}
+
 	// Get the node value and assign to integer
 	// Once that is done push it to constant stack to evaluate further
 	case *ast.IntegerLiteral:
