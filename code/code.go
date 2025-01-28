@@ -22,6 +22,7 @@ type Opcode byte
 // Defining OpConstants, As we are going to generate the codes on fly.
 const (
 	OpConstant Opcode = iota
+	OpAdd
 )
 
 // Opcode definations, We will use this to create further instructions for CPU and debug
@@ -33,6 +34,7 @@ type Defination struct {
 // This is map which stores the defination for opcode.
 var definations = map[Opcode]*Defination{
 	OpConstant: {"OpConstant", []int{2}},
+	OpAdd:      {"OpAdd", []int{}},
 }
 
 // Lookup returns the defination pointer or error if the opcode does not exist
@@ -116,6 +118,8 @@ func (ins Instructions) fmtInstruction(def *Defination, operands []int) string {
 		return fmt.Sprintf("ERROR: operand len %d does not match defined %d\n", len(operands), operandCount)
 	}
 	switch operandCount {
+	case 0:
+		return def.Name
 	case 1:
 		return fmt.Sprintf("%s %d", def.Name, operands[0])
 	}
