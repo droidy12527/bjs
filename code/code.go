@@ -23,6 +23,7 @@ type Opcode byte
 const (
 	OpConstant Opcode = iota
 	OpAdd
+	OpPop
 )
 
 // Opcode definations, We will use this to create further instructions for CPU and debug
@@ -35,6 +36,7 @@ type Defination struct {
 var definations = map[Opcode]*Defination{
 	OpConstant: {"OpConstant", []int{2}},
 	OpAdd:      {"OpAdd", []int{}},
+	OpPop:      {"OpPop", []int{}},
 }
 
 // Lookup returns the defination pointer or error if the opcode does not exist

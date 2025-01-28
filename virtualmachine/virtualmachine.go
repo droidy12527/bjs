@@ -60,6 +60,9 @@ func (vm *VirtualMachine) Run() error {
 			rightValue := right.(*object.Integer).Value
 			// Push the result to the stack
 			vm.push(&object.Integer{Value: leftValue + rightValue})
+		// Just pop the element off stack
+		case code.OpPop:
+			vm.pop()
 		}
 	}
 	return nil
@@ -80,4 +83,9 @@ func (vm *VirtualMachine) pop() object.Object {
 	o := vm.stack[vm.sp-1]
 	vm.sp--
 	return o
+}
+
+// Returns the last popped element in stack
+func (vm *VirtualMachine) LastPoppedStackElement() object.Object {
+	return vm.stack[vm.sp]
 }

@@ -43,7 +43,7 @@ func StartRELP(input io.Reader, out io.Writer, compilationMode bool) {
 				fmt.Fprintf(out, "Woops! Bytecode Execution failed:\n %s\n", err)
 				continue
 			}
-			stackTop := machine.StackTop()
+			stackTop := machine.LastPoppedStackElement()
 			io.WriteString(out, stackTop.Inspect())
 			io.WriteString(out, "\n")
 		} else {
