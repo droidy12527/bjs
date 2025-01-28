@@ -24,6 +24,9 @@ const (
 	OpConstant Opcode = iota
 	OpAdd
 	OpPop
+	OpSub
+	OpMul
+	OpDiv
 )
 
 // Opcode definations, We will use this to create further instructions for CPU and debug
@@ -36,7 +39,9 @@ type Defination struct {
 var definations = map[Opcode]*Defination{
 	OpConstant: {"OpConstant", []int{2}},
 	OpAdd:      {"OpAdd", []int{}},
-	OpPop:      {"OpPop", []int{}},
+	OpSub:      {"OpSub", []int{}},
+	OpMul:      {"OpMul", []int{}},
+	OpDiv:      {"OpDiv", []int{}},
 }
 
 // Lookup returns the defination pointer or error if the opcode does not exist
