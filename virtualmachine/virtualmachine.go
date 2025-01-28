@@ -52,6 +52,14 @@ func (vm *VirtualMachine) Run() error {
 			if err != nil {
 				return err
 			}
+		case code.OpAdd:
+			// Pop the values from stack and then cast them into ineteger
+			right := vm.pop()
+			left := vm.pop()
+			leftValue := left.(*object.Integer).Value
+			rightValue := right.(*object.Integer).Value
+			// Push the result to the stack
+			vm.push(&object.Integer{Value: leftValue + rightValue})
 		}
 	}
 	return nil
@@ -65,4 +73,11 @@ func (vm *VirtualMachine) push(o object.Object) error {
 	vm.stack[vm.sp] = o
 	vm.sp++
 	return nil
+}
+
+// Pops from the stack of Virtual machine and returns back object
+func (vm *VirtualMachine) pop() object.Object {
+	o := vm.stack[vm.sp-1]
+	vm.sp--
+	return o
 }
