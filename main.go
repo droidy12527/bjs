@@ -18,12 +18,19 @@ import (
 func main() {
 	// readFile()
 	tokenDebug := os.Getenv("BJS_DEBUG")
+	tokenCompilationMode := os.Getenv("BJS_COMPILE_MODE")
 	if tokenDebug == "true" {
 		fmt.Printf(constants.LOGO)
 		fmt.Println("JavaScript For Servers, Blazingly Fast and Compiled")
 		fmt.Println("Welcome to BJS lang debugger, This is your new RELP for debugging purpose")
 		fmt.Println("Please type in expressions to Debug: ")
-		relp.StartRELP(os.Stdin, os.Stdout)
+		if tokenCompilationMode == "true" {
+			fmt.Println("Running in Compilation mode")
+			relp.StartRELP(os.Stdin, os.Stdout, true)
+		} else {
+			fmt.Println("Running in Interpreter mode: default mode")
+			relp.StartRELP(os.Stdin, os.Stdout, false)
+		}
 	} else {
 		readFile()
 	}
@@ -31,12 +38,12 @@ func main() {
 
 func readFile() {
 	osArgs := os.Args
-	if len(osArgs) < 1 {
-		panic("not enough arguments to compile file")
+	if len(osArgs) < 2 {
+		panic("not enough arguments to read file")
 	}
-	filename := osArgs[1]
+	filename := osArgs[0]
 	fileExtension := strings.Split(filename, ".")[1]
 	if fileExtension != "bjs" {
-		panic("file extension is wrong, make sure you are using pookie file extension.")
+		panic("file extension is wrong, make sure you are using bjs file extension.")
 	}
 }

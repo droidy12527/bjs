@@ -2,16 +2,18 @@ package relp
 
 import (
 	"bufio"
+	"compiler/compiler"
 	"compiler/constants"
 	"compiler/evaluator"
 	"compiler/lexer"
 	"compiler/object"
 	"compiler/parser"
+	"compiler/virtualmachine"
 	"fmt"
 	"io"
 )
 
-func StartRELP(input io.Reader, out io.Writer) {
+func StartRELP(input io.Reader, out io.Writer, compilationMode bool) {
 	scanner := bufio.NewScanner(input)
 	env := object.NewEnviornment()
 	for {
@@ -28,11 +30,30 @@ func StartRELP(input io.Reader, out io.Writer) {
 			printParserErrors(out, p.Errors())
 			continue
 		}
-		evaluated := evaluator.Eval(program, env)
-		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
+		if compilationMode {
+			comp := compiler.New()
+			err := comp.Compile(program)
+			if err != nil {
+				fmt.Fprintf(out, "Woops! Compilation failed:\n %s\n", err)
+				continue
+			}
+			machine := virtualmachine.New(comp.ByteCode())
+			err = machine.Run()
+			if err != nil {
+				fmt.Fprintf(out, "Woops! Bytecode Execution failed:\n %s\n", err)
+				continue
+			}
+			stackTop := machine.StackTop()
+			io.WriteString(out, stackTop.Inspect())
 			io.WriteString(out, "\n")
+		} else {
+			evaluated := evaluator.Eval(program, env)
+			if evaluated != nil {
+				io.WriteString(out, evaluated.Inspect())
+				io.WriteString(out, "\n")
+			}
 		}
+
 	}
 }
 
