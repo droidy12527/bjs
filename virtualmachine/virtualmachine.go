@@ -65,6 +65,7 @@ func (vm *VirtualMachine) Run() error {
 	return nil
 }
 
+// Does basic checks on the opcode and values and returns back if there is any error
 func (vm *VirtualMachine) executeBinaryOperation(op code.Opcode) error {
 	right := vm.pop()
 	left := vm.pop()
@@ -75,6 +76,8 @@ func (vm *VirtualMachine) executeBinaryOperation(op code.Opcode) error {
 	return fmt.Errorf("unsupported types %s %s", left.Type(), right.Type())
 }
 
+// Does the operations on left and right operator and then pushed them on the VM stack and returns back error
+// if found
 func (vm *VirtualMachine) executeBinaryIntegerOperation(op code.Opcode, left, right object.Object) error {
 	leftVal := left.(*object.Integer).Value
 	rightVal := right.(*object.Integer).Value

@@ -27,6 +27,8 @@ const (
 	OpSub
 	OpMul
 	OpDiv
+	OpTrue
+	OpFalse
 )
 
 // Opcode definations, We will use this to create further instructions for CPU and debug
@@ -43,6 +45,8 @@ var definations = map[Opcode]*Defination{
 	OpMul:      {"OpMul", []int{}},
 	OpDiv:      {"OpDiv", []int{}},
 	OpPop:      {"OpPop", []int{}},
+	OpTrue:     {"OpTrue", []int{}},
+	OpFalse:    {"OpFalse", []int{}},
 }
 
 // Lookup returns the defination pointer or error if the opcode does not exist
