@@ -3,7 +3,6 @@ package virtualmachine
 import (
 	"compiler/code"
 	"compiler/compiler"
-	"compiler/constants"
 	"compiler/object"
 	"fmt"
 )
@@ -53,45 +52,19 @@ func (vm *VirtualMachine) Run() error {
 			if err != nil {
 				return err
 			}
-		case code.OpAdd, code.OpDiv, code.OpMul, code.OpSub:
-			err := vm.executeBinaryOperation(op)
-			if err != nil {
-				return err
-			}
+		case code.OpAdd:
+			right := vm.pop()
+			left := vm.pop()
+			leftvalue := left.(*object.Integer).Value
+			rightvalue := right.(*object.Integer).Value
+			result := leftvalue + rightvalue
+			vm.push(&object.Integer{Value: result})
 		// Just pop the element off stack
 		case code.OpPop:
 			vm.pop()
 		}
 	}
 	return nil
-}
-
-func (vm *VirtualMachine) executeBinaryOperation(op code.Opcode) error {
-	right := vm.pop()
-	left := vm.pop()
-	if left.Type() == constants.INTEGER_OBJECT && right.Type() == constants.INTEGER_OBJECT {
-		return vm.executeBinaryIntegerOperation(op, left, right)
-	}
-	return fmt.Errorf("types are unsupported %s, %s", left.Type(), right.Type())
-}
-
-func (vm *VirtualMachine) executeBinaryIntegerOperation(op code.Opcode, left object.Object, right object.Object) error {
-	leftValue := left.(*object.Integer).Value
-	rightValue := right.(*object.Integer).Value
-	var result int64
-	switch op {
-	case code.OpAdd:
-		result = leftValue + rightValue
-	case code.OpDiv:
-		result = leftValue / rightValue
-	case code.OpMul:
-		result = leftValue * rightValue
-	case code.OpSub:
-		result = leftValue - rightValue
-	default:
-		return fmt.Errorf("unsupported operation code %d", op)
-	}
-	return vm.push(&object.Integer{Value: result})
 }
 
 // Pushes the object to stack of Virtual machine and increments the stackpointer
@@ -109,9 +82,4 @@ func (vm *VirtualMachine) pop() object.Object {
 	o := vm.stack[vm.sp-1]
 	vm.sp--
 	return o
-}
-
-// Returns the last popped element in stack
-func (vm *VirtualMachine) LastPoppedStackElement() object.Object {
-	return vm.stack[vm.sp]
 }
