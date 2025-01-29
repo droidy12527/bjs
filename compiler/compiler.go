@@ -50,6 +50,13 @@ func (c *Compiler) Compile(node ast.Node) error {
 			return err
 		}
 		c.emit(code.OpPop)
+	// Check for case for boolean values
+	case *ast.Boolean:
+		if node.Value {
+			c.emit(code.OpTrue)
+		} else {
+			c.emit(code.OpFalse)
+		}
 	// Get the left and right node for infix expression and compile them
 	case *ast.InfixExpression:
 		err := c.Compile(node.Left)

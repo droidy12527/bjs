@@ -3,6 +3,7 @@ package virtualmachine
 import (
 	"compiler/code"
 	"compiler/compiler"
+	"compiler/constants"
 	"compiler/object"
 	"fmt"
 )
@@ -10,6 +11,11 @@ import (
 // Defining stacksize to also check with stack overflow
 // Limited stack size has been used, for in depth recursive operations this stack size can be increased
 const StackSize = 2048
+
+// Setting global values of True and False as they are immutable and do not change
+// Defining them everytime gains memory space and has to gc it again and again
+var True = &object.Boolean{Value: true}
+var False = &object.Boolean{Value: false}
 
 type VirtualMachine struct {
 	constants    []object.Object
@@ -52,19 +58,58 @@ func (vm *VirtualMachine) Run() error {
 			if err != nil {
 				return err
 			}
-		case code.OpAdd:
-			right := vm.pop()
-			left := vm.pop()
-			leftvalue := left.(*object.Integer).Value
-			rightvalue := right.(*object.Integer).Value
-			result := leftvalue + rightvalue
-			vm.push(&object.Integer{Value: result})
-		// Just pop the element off stack
+		case code.OpTrue:
+			err := vm.push(True)
+			if err != nil {
+				return err
+			}
+		case code.OpFalse:
+			err := vm.push(False)
+			if err != nil {
+				return err
+			}
+		case code.OpAdd, code.OpDiv, code.OpMul, code.OpSub:
+			err := vm.executeBinaryOperation(op)
+			if err != nil {
+				return err
+			}
 		case code.OpPop:
 			vm.pop()
 		}
 	}
 	return nil
+}
+
+// Does basic checks on the opcode and values and returns back if there is any error
+func (vm *VirtualMachine) executeBinaryOperation(op code.Opcode) error {
+	right := vm.pop()
+	left := vm.pop()
+
+	if right.Type() == constants.INTEGER_OBJECT && left.Type() == constants.INTEGER_OBJECT {
+		return vm.executeBinaryIntegerOperation(op, left, right)
+	}
+	return fmt.Errorf("unsupported types %s %s", left.Type(), right.Type())
+}
+
+// Does the operations on left and right operator and then pushed them on the VM stack and returns back error
+// if found
+func (vm *VirtualMachine) executeBinaryIntegerOperation(op code.Opcode, left, right object.Object) error {
+	leftVal := left.(*object.Integer).Value
+	rightVal := right.(*object.Integer).Value
+	var result int64
+	switch op {
+	case code.OpAdd:
+		result = leftVal + rightVal
+	case code.OpSub:
+		result = leftVal - rightVal
+	case code.OpDiv:
+		result = leftVal / rightVal
+	case code.OpMul:
+		result = leftVal * rightVal
+	default:
+		return fmt.Errorf("unknown integer operator : %d", op)
+	}
+	return vm.push(&object.Integer{Value: result})
 }
 
 // Pushes the object to stack of Virtual machine and increments the stackpointer
@@ -82,4 +127,9 @@ func (vm *VirtualMachine) pop() object.Object {
 	o := vm.stack[vm.sp-1]
 	vm.sp--
 	return o
+}
+
+// Returns back the last popped element from the stack
+func (vm *VirtualMachine) LastPoppedStackElem() object.Object {
+	return vm.stack[vm.sp]
 }
