@@ -59,6 +59,21 @@ func (c *Compiler) Compile(node ast.Node) error {
 		}
 	// Get the left and right node for infix expression and compile them
 	case *ast.InfixExpression:
+		// Special case handling for less than operator
+		// Since we pop left and then right, If we do it in opposite direction
+		// In a hacky way we can use less than operator as greater than operator
+		if node.Operator == "<" {
+			err := c.Compile(node.Right)
+			if err != nil {
+				return err
+			}
+			err = c.Compile(node.Left)
+			if err != nil {
+				return err
+			}
+			c.emit(code.OpGreaterThan)
+			return nil
+		}
 		err := c.Compile(node.Left)
 		if err != nil {
 			return err
@@ -77,6 +92,12 @@ func (c *Compiler) Compile(node ast.Node) error {
 			c.emit(code.OpMul)
 		case "/":
 			c.emit(code.OpDiv)
+		case ">":
+			c.emit(code.OpGreaterThan)
+		case "==":
+			c.emit(code.OpEqual)
+		case "!=":
+			c.emit(code.OpNotEqual)
 		default:
 			return fmt.Errorf("unknown operator founf %s", node.Operator)
 		}
