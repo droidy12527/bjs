@@ -3,6 +3,7 @@ package virtualmachine
 import (
 	"compiler/code"
 	"compiler/compiler"
+	"compiler/constants"
 	"compiler/object"
 	"fmt"
 )
@@ -52,18 +53,45 @@ func (vm *VirtualMachine) Run() error {
 			if err != nil {
 				return err
 			}
-		case code.OpAdd:
-			right := vm.pop()
-			left := vm.pop()
-			leftvalue := left.(*object.Integer).Value
-			rightvalue := right.(*object.Integer).Value
-			result := leftvalue + rightvalue
-			vm.push(&object.Integer{Value: result})
+		case code.OpAdd, code.OpDiv, code.OpMul, code.OpSub:
+			err := vm.executeBinaryOperation(op)
+			if err != nil {
+				return err
+			}
 		case code.OpPop:
 			vm.pop()
 		}
 	}
 	return nil
+}
+
+func (vm *VirtualMachine) executeBinaryOperation(op code.Opcode) error {
+	right := vm.pop()
+	left := vm.pop()
+
+	if right.Type() == constants.INTEGER_OBJECT && left.Type() == constants.INTEGER_OBJECT {
+		return vm.executeBinaryIntegerOperation(op, left, right)
+	}
+	return fmt.Errorf("unsupported types %s %s", left.Type(), right.Type())
+}
+
+func (vm *VirtualMachine) executeBinaryIntegerOperation(op code.Opcode, left, right object.Object) error {
+	leftVal := left.(*object.Integer).Value
+	rightVal := right.(*object.Integer).Value
+	var result int64
+	switch op {
+	case code.OpAdd:
+		result = leftVal + rightVal
+	case code.OpSub:
+		result = leftVal - rightVal
+	case code.OpDiv:
+		result = leftVal / rightVal
+	case code.OpMul:
+		result = leftVal * rightVal
+	default:
+		return fmt.Errorf("unknown integer operator : %d", op)
+	}
+	return vm.push(&object.Integer{Value: result})
 }
 
 // Pushes the object to stack of Virtual machine and increments the stackpointer
