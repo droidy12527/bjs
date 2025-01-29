@@ -58,7 +58,23 @@ func testExpectedObject(t *testing.T, expected interface{}, actual object.Object
 		if err != nil {
 			t.Errorf("testIntegerObject failed: %s", err)
 		}
+	case bool:
+		err := testBooleanObject(bool(expected), actual)
+		if err != nil {
+			t.Errorf("test boolean object failed %s", err)
+		}
 	}
+}
+
+func testBooleanObject(expected bool, actual object.Object) error {
+	result, ok := actual.(*object.Boolean)
+	if !ok {
+		return fmt.Errorf("object is not boolean got back %T", actual)
+	}
+	if result.Value != expected {
+		return fmt.Errorf("object has wrong value got %t want %t", result.Value, expected)
+	}
+	return nil
 }
 
 func TestIntegerArithmetic(t *testing.T) {
@@ -76,6 +92,14 @@ func TestIntegerArithmetic(t *testing.T) {
 		{"5 * 2 + 10", 20},
 		{"5 + 2 * 10", 25},
 		{"5 * (2 + 10)", 60},
+	}
+	runVmTests(t, tests)
+}
+
+func TestBooleanExpressions(t *testing.T) {
+	tests := []vmTestCase{
+		{"true", true},
+		{"false", false},
 	}
 	runVmTests(t, tests)
 }

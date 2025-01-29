@@ -12,6 +12,11 @@ import (
 // Limited stack size has been used, for in depth recursive operations this stack size can be increased
 const StackSize = 2048
 
+// Setting global values of True and False as they are immutable and do not change
+// Defining them everytime gains memory space and has to gc it again and again
+var True = &object.Boolean{Value: true}
+var False = &object.Boolean{Value: false}
+
 type VirtualMachine struct {
 	constants    []object.Object
 	instructions code.Instructions
@@ -50,6 +55,16 @@ func (vm *VirtualMachine) Run() error {
 			constIndex := code.ReadUint16(vm.instructions[ip+1:])
 			ip += 2
 			err := vm.push(vm.constants[constIndex])
+			if err != nil {
+				return err
+			}
+		case code.OpTrue:
+			err := vm.push(True)
+			if err != nil {
+				return err
+			}
+		case code.OpFalse:
+			err := vm.push(False)
 			if err != nil {
 				return err
 			}
