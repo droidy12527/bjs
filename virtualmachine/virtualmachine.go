@@ -53,13 +53,15 @@ func (vm *VirtualMachine) Run() error {
 				return err
 			}
 		case code.OpAdd:
-			// Pop the values from stack and then cast them into ineteger
 			right := vm.pop()
 			left := vm.pop()
-			leftValue := left.(*object.Integer).Value
-			rightValue := right.(*object.Integer).Value
-			// Push the result to the stack
-			vm.push(&object.Integer{Value: leftValue + rightValue})
+			leftvalue := left.(*object.Integer).Value
+			rightvalue := right.(*object.Integer).Value
+			result := leftvalue + rightvalue
+			vm.push(&object.Integer{Value: result})
+		// Just pop the element off stack
+		case code.OpPop:
+			vm.pop()
 		}
 	}
 	return nil
