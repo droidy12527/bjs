@@ -42,6 +42,7 @@ var definations = map[Opcode]*Defination{
 	OpSub:      {"OpSub", []int{}},
 	OpMul:      {"OpMul", []int{}},
 	OpDiv:      {"OpDiv", []int{}},
+	OpPop:      {"OpPop", []int{}},
 }
 
 // Lookup returns the defination pointer or error if the opcode does not exist
