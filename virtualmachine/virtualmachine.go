@@ -73,11 +73,54 @@ func (vm *VirtualMachine) Run() error {
 			if err != nil {
 				return err
 			}
+		case code.OpEqual, code.OpGreaterThan, code.OpNotEqual:
+			err := vm.executeComparison(op)
+			if err != nil {
+				return err
+			}
 		case code.OpPop:
 			vm.pop()
 		}
 	}
 	return nil
+}
+
+func (vm *VirtualMachine) executeComparison(op code.Opcode) error {
+	right := vm.pop()
+	left := vm.pop()
+	if left.Type() == constants.INTEGER_OBJECT || right.Type() == constants.INTEGER_OBJECT {
+		return vm.executeIntegerComparision(op, left, right)
+	}
+	switch op {
+	case code.OpEqual:
+		return vm.push(nativeBoolToBooleanObject(right == left))
+	case code.OpNotEqual:
+		return vm.push(nativeBoolToBooleanObject(right != left))
+	default:
+		return fmt.Errorf("operator not supported: %d %s %s", op, left.Type(), right.Type())
+	}
+}
+
+func (vm *VirtualMachine) executeIntegerComparision(op code.Opcode, left, right object.Object) error {
+	leftValue := left.(*object.Integer).Value
+	rightValue := right.(*object.Integer).Value
+	switch op {
+	case code.OpEqual:
+		return vm.push(nativeBoolToBooleanObject(rightValue == leftValue))
+	case code.OpNotEqual:
+		return vm.push(nativeBoolToBooleanObject(rightValue != leftValue))
+	case code.OpGreaterThan:
+		return vm.push(nativeBoolToBooleanObject(leftValue > rightValue))
+	default:
+		return fmt.Errorf("operator not supported: %d", op)
+	}
+}
+
+func nativeBoolToBooleanObject(input bool) *object.Boolean {
+	if input {
+		return True
+	}
+	return False
 }
 
 // Does basic checks on the opcode and values and returns back if there is any error
