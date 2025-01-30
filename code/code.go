@@ -32,6 +32,8 @@ const (
 	OpEqual
 	OpNotEqual
 	OpGreaterThan
+	OpMinus
+	OpBang
 )
 
 // Opcode definations, We will use this to create further instructions for CPU and debug
@@ -53,6 +55,8 @@ var definations = map[Opcode]*Defination{
 	OpEqual:       {"OpEqual", []int{}},
 	OpNotEqual:    {"OpNotEqual", []int{}},
 	OpGreaterThan: {"OpGreaterThan", []int{}},
+	OpMinus:       {"OpMinus", []int{}},
+	OpBang:        {"OpBang", []int{}},
 }
 
 // Lookup returns the defination pointer or error if the opcode does not exist
