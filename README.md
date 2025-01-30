@@ -38,6 +38,16 @@ go build -o bjs
 
 ```
 
+## You can set the binary in your binary folder to access from anywhere by using this command
+```bash
+# Compile the binary by using this command
+sudo ./compile.sh
+# Move the BJS binary to bin folder
+sudo mv bjs /usr/local/bin/ 
+# Make it executable
+sudo chmod +x /usr/local/bin/bjs
+```
+
 ## Future Releases
 
 ### Compilation Benefits (Coming Soon)
