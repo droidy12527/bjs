@@ -85,6 +85,7 @@ func (vm *VirtualMachine) Run() error {
 	return nil
 }
 
+// Checks for comparision checks and returns back error if it exist
 func (vm *VirtualMachine) executeComparison(op code.Opcode) error {
 	right := vm.pop()
 	left := vm.pop()
@@ -101,6 +102,7 @@ func (vm *VirtualMachine) executeComparison(op code.Opcode) error {
 	}
 }
 
+// Checks exclusive integer comparision
 func (vm *VirtualMachine) executeIntegerComparision(op code.Opcode, left, right object.Object) error {
 	leftValue := left.(*object.Integer).Value
 	rightValue := right.(*object.Integer).Value
@@ -116,6 +118,8 @@ func (vm *VirtualMachine) executeIntegerComparision(op code.Opcode, left, right 
 	}
 }
 
+// Returns back boolean operator in form of Object which is pointer to
+// the true or false immutable objects in memory
 func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	if input {
 		return True
