@@ -101,6 +101,20 @@ func (c *Compiler) Compile(node ast.Node) error {
 		default:
 			return fmt.Errorf("unknown operator founf %s", node.Operator)
 		}
+	// Added test case for prefix expression
+	case *ast.PrefixExpression:
+		err := c.Compile(node.Right)
+		if err != nil {
+			return err
+		}
+		switch node.Operator {
+		case "!":
+			c.emit(code.OpBang)
+		case "-":
+			c.emit(code.OpMinus)
+		default:
+			return fmt.Errorf("operator not supported %s", node.Operator)
+		}
 
 	// Get the node value and assign to integer
 	// Once that is done push it to constant stack to evaluate further
