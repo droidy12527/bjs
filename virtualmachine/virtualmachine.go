@@ -51,6 +51,11 @@ func (vm *VirtualMachine) Run() error {
 		op := code.Opcode(vm.instructions[ip])
 		// Get the opcode and then start decoding in execute cycle
 		switch op {
+		case code.OpBang:
+			err := vm.executeBangOperator()
+			if err != nil {
+				return err
+			}
 		case code.OpConstant:
 			constIndex := code.ReadUint16(vm.instructions[ip+1:])
 			ip += 2
@@ -83,6 +88,19 @@ func (vm *VirtualMachine) Run() error {
 		}
 	}
 	return nil
+}
+
+// Bang operator adds the operand and makes opposite type back and pushes back to the stack
+func (vm *VirtualMachine) executeBangOperator() error {
+	operand := vm.pop()
+	switch operand {
+	case True:
+		return vm.push(False)
+	case False:
+		return vm.push(True)
+	default:
+		vm.push(False)
+	}
 }
 
 // Checks for comparision checks and returns back error if it exist
