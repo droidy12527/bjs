@@ -56,6 +56,11 @@ func (vm *VirtualMachine) Run() error {
 			if err != nil {
 				return err
 			}
+		case code.OpMinus:
+			err := vm.executeMinusOperator()
+			if err != nil {
+				return err
+			}
 		case code.OpConstant:
 			constIndex := code.ReadUint16(vm.instructions[ip+1:])
 			ip += 2
@@ -99,8 +104,18 @@ func (vm *VirtualMachine) executeBangOperator() error {
 	case False:
 		return vm.push(True)
 	default:
-		vm.push(False)
+		return vm.push(False)
 	}
+}
+
+// Minus operator is returned back and pushed to the stack
+func (vm *VirtualMachine) executeMinusOperator() error {
+	operand := vm.pop()
+	if operand.Type() != constants.INTEGER_OBJECT {
+		return fmt.Errorf("type is unsupported %s", operand.Type())
+	}
+	value := operand.(*object.Integer).Value
+	return vm.push(&object.Integer{Value: -value})
 }
 
 // Checks for comparision checks and returns back error if it exist
